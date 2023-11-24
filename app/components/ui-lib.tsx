@@ -1,20 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
-import styles from "./ui-lib.module.scss";
-import LoadingIcon from "../icons/three-dots.svg";
-import CloseIcon from "../icons/close.svg";
-import EyeIcon from "../icons/eye.svg";
-import EyeOffIcon from "../icons/eye-off.svg";
-import DownIcon from "../icons/down.svg";
-import ConfirmIcon from "../icons/confirm.svg";
-import CancelIcon from "../icons/cancel.svg";
-import MaxIcon from "../icons/max.svg";
-import MinIcon from "../icons/min.svg";
+import { ReactComponent as CancelIcon } from '../icons/cancel.svg';
+import { ReactComponent as CloseIcon } from '../icons/close.svg';
+import { ReactComponent as ConfirmIcon } from '../icons/confirm.svg';
+import { ReactComponent as DownIcon } from '../icons/down.svg';
+import { ReactComponent as EyeOffIcon } from '../icons/eye-off.svg';
+import { ReactComponent as EyeIcon } from '../icons/eye.svg';
+import { ReactComponent as MaxIcon } from '../icons/max.svg';
+import { ReactComponent as MinIcon } from '../icons/min.svg';
+import { ReactComponent as LoadingIcon } from '../icons/three-dots.svg';
+import styles from './ui-lib.module.scss';
 
-import Locale from "../locales";
+import Locale from '../locales';
 
-import { createRoot } from "react-dom/client";
-import React, { HTMLProps, useEffect, useState } from "react";
-import { IconButton } from "./button";
+import React, { HTMLProps, useEffect, useState } from 'react';
+
+import { createRoot } from 'react-dom/client';
+import { IconButton } from './button';
 
 export function Popover(props: {
   children: JSX.Element;
@@ -26,8 +27,8 @@ export function Popover(props: {
     <div className={styles.popover}>
       {props.children}
       {props.open && (
-        <div className={styles["popover-content"]}>
-          <div className={styles["popover-mask"]} onClick={props.onClose}></div>
+        <div className={styles['popover-content']}>
+          <div className={styles['popover-mask']} onClick={props.onClose}></div>
           {props.content}
         </div>
       )}
@@ -36,9 +37,7 @@ export function Popover(props: {
 }
 
 export function Card(props: { children: JSX.Element[]; className?: string }) {
-  return (
-    <div className={styles.card + " " + props.className}>{props.children}</div>
-  );
+  return <div className={styles.card + ' ' + props.className}>{props.children}</div>;
 }
 
 export function ListItem(props: {
@@ -50,19 +49,12 @@ export function ListItem(props: {
   onClick?: () => void;
 }) {
   return (
-    <div
-      className={styles["list-item"] + ` ${props.className || ""}`}
-      onClick={props.onClick}
-    >
-      <div className={styles["list-header"]}>
-        {props.icon && <div className={styles["list-icon"]}>{props.icon}</div>}
-        <div className={styles["list-item-title"]}>
+    <div className={styles['list-item'] + ` ${props.className || ''}`} onClick={props.onClick}>
+      <div className={styles['list-header']}>
+        {props.icon && <div className={styles['list-icon']}>{props.icon}</div>}
+        <div className={styles['list-item-title']}>
           <div>{props.title}</div>
-          {props.subTitle && (
-            <div className={styles["list-item-sub-title"]}>
-              {props.subTitle}
-            </div>
-          )}
+          {props.subTitle && <div className={styles['list-item-sub-title']}>{props.subTitle}</div>}
         </div>
       </div>
       {props.children}
@@ -82,11 +74,11 @@ export function Loading() {
   return (
     <div
       style={{
-        height: "100vh",
-        width: "100vw",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        height: '100vh',
+        width: '100vw',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <LoadingIcon />
@@ -105,15 +97,15 @@ interface ModalProps {
 export function Modal(props: ModalProps) {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         props.onClose?.();
       }
     };
 
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener('keydown', onKeyDown);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -121,37 +113,27 @@ export function Modal(props: ModalProps) {
   const [isMax, setMax] = useState(!!props.defaultMax);
 
   return (
-    <div
-      className={
-        styles["modal-container"] + ` ${isMax && styles["modal-container-max"]}`
-      }
-    >
-      <div className={styles["modal-header"]}>
-        <div className={styles["modal-title"]}>{props.title}</div>
+    <div className={styles['modal-container'] + ` ${isMax && styles['modal-container-max']}`}>
+      <div className={styles['modal-header']}>
+        <div className={styles['modal-title']}>{props.title}</div>
 
-        <div className={styles["modal-header-actions"]}>
-          <div
-            className={styles["modal-header-action"]}
-            onClick={() => setMax(!isMax)}
-          >
+        <div className={styles['modal-header-actions']}>
+          <div className={styles['modal-header-action']} onClick={() => setMax(!isMax)}>
             {isMax ? <MinIcon /> : <MaxIcon />}
           </div>
-          <div
-            className={styles["modal-header-action"]}
-            onClick={props.onClose}
-          >
+          <div className={styles['modal-header-action']} onClick={props.onClose}>
             <CloseIcon />
           </div>
         </div>
       </div>
 
-      <div className={styles["modal-content"]}>{props.children}</div>
+      <div className={styles['modal-content']}>{props.children}</div>
 
-      <div className={styles["modal-footer"]}>
+      <div className={styles['modal-footer']}>
         {props.footer}
-        <div className={styles["modal-actions"]}>
+        <div className={styles['modal-actions']}>
           {props.actions?.map((action, i) => (
-            <div key={i} className={styles["modal-action"]}>
+            <div key={i} className={styles['modal-action']}>
               {action}
             </div>
           ))}
@@ -162,8 +144,8 @@ export function Modal(props: ModalProps) {
 }
 
 export function showModal(props: ModalProps) {
-  const div = document.createElement("div");
-  div.className = "modal-mask";
+  const div = document.createElement('div');
+  div.className = 'modal-mask';
   document.body.appendChild(div);
 
   const root = createRoot(div);
@@ -193,8 +175,8 @@ export type ToastProps = {
 
 export function Toast(props: ToastProps) {
   return (
-    <div className={styles["toast-container"]}>
-      <div className={styles["toast-content"]}>
+    <div className={styles['toast-container']}>
+      <div className={styles['toast-content']}>
         <span>{props.content}</span>
         {props.action && (
           <button
@@ -202,7 +184,7 @@ export function Toast(props: ToastProps) {
               props.action?.onClick?.();
               props.onClose?.();
             }}
-            className={styles["toast-action"]}
+            className={styles['toast-action']}
           >
             {props.action.text}
           </button>
@@ -212,12 +194,8 @@ export function Toast(props: ToastProps) {
   );
 }
 
-export function showToast(
-  content: string,
-  action?: ToastProps["action"],
-  delay = 3000,
-) {
-  const div = document.createElement("div");
+export function showToast(content: string, action?: ToastProps['action'], delay = 3000) {
+  const div = document.createElement('div');
   div.className = styles.show;
   document.body.appendChild(div);
 
@@ -244,12 +222,7 @@ export type InputProps = React.HTMLProps<HTMLTextAreaElement> & {
 };
 
 export function Input(props: InputProps) {
-  return (
-    <textarea
-      {...props}
-      className={`${styles["input"]} ${props.className}`}
-    ></textarea>
-  );
+  return <textarea {...props} className={`${styles['input']} ${props.className}`}></textarea>;
 }
 
 export function PasswordInput(props: HTMLProps<HTMLInputElement>) {
@@ -260,41 +233,34 @@ export function PasswordInput(props: HTMLProps<HTMLInputElement>) {
   }
 
   return (
-    <div className={"password-input-container"}>
+    <div className={'password-input-container'}>
       <IconButton
         icon={visible ? <EyeIcon /> : <EyeOffIcon />}
         onClick={changeVisibility}
-        className={"password-eye"}
+        className={'password-eye'}
       />
-      <input
-        {...props}
-        type={visible ? "text" : "password"}
-        className={"password-input"}
-      />
+      <input {...props} type={visible ? 'text' : 'password'} className={'password-input'} />
     </div>
   );
 }
 
 export function Select(
-  props: React.DetailedHTMLProps<
-    React.SelectHTMLAttributes<HTMLSelectElement>,
-    HTMLSelectElement
-  >,
+  props: React.DetailedHTMLProps<React.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>,
 ) {
   const { className, children, ...otherProps } = props;
   return (
-    <div className={`${styles["select-with-icon"]} ${className}`}>
-      <select className={styles["select-with-icon-select"]} {...otherProps}>
+    <div className={`${styles['select-with-icon']} ${className}`}>
+      <select className={styles['select-with-icon-select']} {...otherProps}>
         {children}
       </select>
-      <DownIcon className={styles["select-with-icon-icon"]} />
+      <DownIcon className={styles['select-with-icon-icon']} />
     </div>
   );
 }
 
 export function showConfirm(content: any) {
-  const div = document.createElement("div");
-  div.className = "modal-mask";
+  const div = document.createElement('div');
+  div.className = 'modal-mask';
   document.body.appendChild(div);
 
   const root = createRoot(div);
@@ -343,11 +309,7 @@ export function showConfirm(content: any) {
   });
 }
 
-function PromptInput(props: {
-  value: string;
-  onChange: (value: string) => void;
-  rows?: number;
-}) {
+function PromptInput(props: { value: string; onChange: (value: string) => void; rows?: number }) {
   const [input, setInput] = useState(props.value);
   const onInput = (value: string) => {
     props.onChange(value);
@@ -356,7 +318,7 @@ function PromptInput(props: {
 
   return (
     <textarea
-      className={styles["modal-input"]}
+      className={styles['modal-input']}
       autoFocus
       value={input}
       onInput={(e) => onInput(e.currentTarget.value)}
@@ -365,9 +327,9 @@ function PromptInput(props: {
   );
 }
 
-export function showPrompt(content: any, value = "", rows = 3) {
-  const div = document.createElement("div");
-  div.className = "modal-mask";
+export function showPrompt(content: any, value = '', rows = 3) {
+  const div = document.createElement('div');
+  div.className = 'modal-mask';
   document.body.appendChild(div);
 
   const root = createRoot(div);
@@ -410,11 +372,7 @@ export function showPrompt(content: any, value = "", rows = 3) {
         ]}
         onClose={closeModal}
       >
-        <PromptInput
-          onChange={(val) => (userInput = val)}
-          value={value}
-          rows={rows}
-        ></PromptInput>
+        <PromptInput onChange={(val) => (userInput = val)} value={value} rows={rows}></PromptInput>
       </Modal>,
     );
   });
@@ -429,7 +387,7 @@ export function showImageModal(img: string) {
           src={img}
           alt="preview"
           style={{
-            maxWidth: "100%",
+            maxWidth: '100%',
           }}
         ></img>
       </div>
@@ -449,14 +407,14 @@ export function Selector<T>(props: {
   multiple?: boolean;
 }) {
   return (
-    <div className={styles["selector"]} onClick={() => props.onClose?.()}>
-      <div className={styles["selector-content"]}>
+    <div className={styles['selector']} onClick={() => props.onClose?.()}>
+      <div className={styles['selector-content']}>
         <List>
           {props.items.map((item, i) => {
             const selected = props.defaultSelectedValue === item.value;
             return (
               <ListItem
-                className={styles["selector-item"]}
+                className={styles['selector-item']}
                 key={i}
                 title={item.title}
                 subTitle={item.subTitle}
@@ -470,7 +428,7 @@ export function Selector<T>(props: {
                     style={{
                       height: 10,
                       width: 10,
-                      backgroundColor: "var(--primary)",
+                      backgroundColor: 'var(--primary)',
                       borderRadius: 10,
                     }}
                   ></div>

@@ -1,7 +1,7 @@
 import React from "react";
 import { IconButton } from "./button";
-import GithubIcon from "../icons/github.svg";
-import ResetIcon from "../icons/reload.svg";
+import { ReactComponent as GithubIcon } from "../icons/github.svg";
+import { ReactComponent as ResetIcon } from "../icons/reload.svg";
 import { ISSUE_URL } from "../constant";
 import Locale from "../locales";
 import { showConfirm } from "./ui-lib";

@@ -59,9 +59,10 @@
 :root {
   @include light;
 
-  --window-width: 90vw;
-  --window-height: 90vh;
-  --sidebar-width: 300px;
+  --window-width: 100%;
+  --window-height: 100%;
+  --sidebar-width: 0;
+  //--sidebar-width: 300px;
   --window-content-width: calc(100% - var(--sidebar-width));
   --message-max-width: 80%;
   --full-height: 100%;
@@ -71,7 +72,8 @@
   :root {
     --window-width: 100vw;
     --window-height: var(--full-height);
-    --sidebar-width: 100vw;
+    --sidebar-width: 0;
+    //--sidebar-width: 100vw;
     --window-content-width: var(--window-width);
     --message-max-width: 100%;
   }

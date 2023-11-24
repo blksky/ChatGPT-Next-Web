@@ -1,6 +1,4 @@
-import { NextResponse } from "next/server";
-
-import { getServerSideConfig } from "../../config/server";
+import { getServerSideConfig } from '../../config/server';
 
 const serverConfig = getServerSideConfig();
 
@@ -20,10 +18,10 @@ declare global {
 }
 
 async function handle() {
-  return NextResponse.json(DANGER_CONFIG);
+  return DANGER_CONFIG;
 }
 
 export const GET = handle;
 export const POST = handle;
 
-export const runtime = "edge";
+export const runtime = 'edge';

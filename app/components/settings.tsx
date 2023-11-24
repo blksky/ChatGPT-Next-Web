@@ -1,24 +1,25 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from 'react';
 
-import styles from "./settings.module.scss";
+import styles from './settings.module.scss';
 
-import ResetIcon from "../icons/reload.svg";
-import AddIcon from "../icons/add.svg";
-import CloseIcon from "../icons/close.svg";
-import CopyIcon from "../icons/copy.svg";
-import ClearIcon from "../icons/clear.svg";
-import LoadingIcon from "../icons/three-dots.svg";
-import EditIcon from "../icons/edit.svg";
-import EyeIcon from "../icons/eye.svg";
-import DownloadIcon from "../icons/download.svg";
-import UploadIcon from "../icons/upload.svg";
-import ConfigIcon from "../icons/config.svg";
-import ConfirmIcon from "../icons/confirm.svg";
+import { ReactComponent as AddIcon } from '../icons/add.svg';
+import { ReactComponent as ClearIcon } from '../icons/clear.svg';
+import { ReactComponent as CloseIcon } from '../icons/close.svg';
+import { ReactComponent as ConfigIcon } from '../icons/config.svg';
+import { ReactComponent as ConfirmIcon } from '../icons/confirm.svg';
+import { ReactComponent as CopyIcon } from '../icons/copy.svg';
+import { ReactComponent as DownloadIcon } from '../icons/download.svg';
+import { ReactComponent as EditIcon } from '../icons/edit.svg';
+import { ReactComponent as EyeIcon } from '../icons/eye.svg';
+import { ReactComponent as ResetIcon } from '../icons/reload.svg';
+import { ReactComponent as LoadingIcon } from '../icons/three-dots.svg';
+import { ReactComponent as UploadIcon } from '../icons/upload.svg';
 
-import ConnectionIcon from "../icons/connection.svg";
-import CloudSuccessIcon from "../icons/cloud-success.svg";
-import CloudFailIcon from "../icons/cloud-fail.svg";
+import { ReactComponent as CloudFailIcon } from '../icons/cloud-fail.svg';
+import { ReactComponent as CloudSuccessIcon } from '../icons/cloud-success.svg';
+import { ReactComponent as ConnectionIcon } from '../icons/connection.svg';
 
+import { ModelConfigList } from './model-config';
 import {
   Input,
   List,
@@ -29,27 +30,21 @@ import {
   Select,
   showConfirm,
   showToast,
-} from "./ui-lib";
-import { ModelConfigList } from "./model-config";
+} from './ui-lib';
 
-import { IconButton } from "./button";
 import {
   SubmitKey,
-  useChatStore,
   Theme,
-  useUpdateStore,
   useAccessStore,
   useAppConfig,
-} from "../store";
+  useChatPathStore,
+  useChatStore,
+  useUpdateStore,
+} from '../store';
+import { IconButton } from './button';
 
-import Locale, {
-  AllLangs,
-  ALL_LANG_OPTIONS,
-  changeLang,
-  getLang,
-} from "../locales";
-import { copyToClipboard } from "../utils";
-import Link from "next/link";
+import { nanoid } from 'nanoid';
+import { getClientConfig } from '../config/client';
 import {
   Azure,
   OPENAI_BASE_URL,
@@ -59,17 +54,16 @@ import {
   ServiceProvider,
   SlotID,
   UPDATE_URL,
-} from "../constant";
-import { Prompt, SearchService, usePromptStore } from "../store/prompt";
-import { ErrorBoundary } from "./error";
-import { InputRange } from "./input-range";
-import { useNavigate } from "react-router-dom";
-import { Avatar, AvatarPicker } from "./emoji";
-import { getClientConfig } from "../config/client";
-import { useSyncStore } from "../store/sync";
-import { nanoid } from "nanoid";
-import { useMaskStore } from "../store/mask";
-import { ProviderType } from "../utils/cloud";
+} from '../constant';
+import Locale, { ALL_LANG_OPTIONS, AllLangs, changeLang, getLang } from '../locales';
+import { useMaskStore } from '../store/mask';
+import { Prompt, SearchService, usePromptStore } from '../store/prompt';
+import { useSyncStore } from '../store/sync';
+import { copyToClipboard } from '../utils';
+import { ProviderType } from '../utils/cloud';
+import { Avatar, AvatarPicker } from './emoji';
+import { ErrorBoundary } from './error';
+import { InputRange } from './input-range';
 
 function EditPromptModal(props: { id: string; onClose: () => void }) {
   const promptStore = usePromptStore();
@@ -80,32 +74,22 @@ function EditPromptModal(props: { id: string; onClose: () => void }) {
       <Modal
         title={Locale.Settings.Prompt.EditModal.Title}
         onClose={props.onClose}
-        actions={[
-          <IconButton
-            key=""
-            onClick={props.onClose}
-            text={Locale.UI.Confirm}
-            bordered
-          />,
-        ]}
+        actions={[<IconButton key="" onClick={props.onClose} text={Locale.UI.Confirm} bordered />]}
       >
-        <div className={styles["edit-prompt-modal"]}>
+        <div className={styles['edit-prompt-modal']}>
           <input
             type="text"
             value={prompt.title}
             readOnly={!prompt.isUser}
-            className={styles["edit-prompt-title"]}
+            className={styles['edit-prompt-title']}
             onInput={(e) =>
-              promptStore.updatePrompt(
-                props.id,
-                (prompt) => (prompt.title = e.currentTarget.value),
-              )
+              promptStore.updatePrompt(props.id, (prompt) => (prompt.title = e.currentTarget.value))
             }
           ></input>
           <Input
             value={prompt.content}
             readOnly={!prompt.isUser}
-            className={styles["edit-prompt-content"]}
+            className={styles['edit-prompt-content']}
             rows={10}
             onInput={(e) =>
               promptStore.updatePrompt(
@@ -125,7 +109,7 @@ function UserPromptModal(props: { onClose?: () => void }) {
   const userPrompts = promptStore.getUserPrompts();
   const builtinPrompts = SearchService.builtinPrompts;
   const allPrompts = userPrompts.concat(builtinPrompts);
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState('');
   const [searchPrompts, setSearchPrompts] = useState<Prompt[]>([]);
   const prompts = searchInput.length > 0 ? searchPrompts : allPrompts;
 
@@ -152,8 +136,8 @@ function UserPromptModal(props: { onClose?: () => void }) {
               const promptId = promptStore.add({
                 id: nanoid(),
                 createdAt: Date.now(),
-                title: "Empty Prompt",
-                content: "Empty Prompt Content",
+                title: 'Empty Prompt',
+                content: 'Empty Prompt Content',
               });
               setEditingPromptId(promptId);
             }}
@@ -163,49 +147,47 @@ function UserPromptModal(props: { onClose?: () => void }) {
           />,
         ]}
       >
-        <div className={styles["user-prompt-modal"]}>
+        <div className={styles['user-prompt-modal']}>
           <input
             type="text"
-            className={styles["user-prompt-search"]}
+            className={styles['user-prompt-search']}
             placeholder={Locale.Settings.Prompt.Modal.Search}
             value={searchInput}
             onInput={(e) => setSearchInput(e.currentTarget.value)}
           ></input>
 
-          <div className={styles["user-prompt-list"]}>
+          <div className={styles['user-prompt-list']}>
             {prompts.map((v, _) => (
-              <div className={styles["user-prompt-item"]} key={v.id ?? v.title}>
-                <div className={styles["user-prompt-header"]}>
-                  <div className={styles["user-prompt-title"]}>{v.title}</div>
-                  <div className={styles["user-prompt-content"] + " one-line"}>
-                    {v.content}
-                  </div>
+              <div className={styles['user-prompt-item']} key={v.id ?? v.title}>
+                <div className={styles['user-prompt-header']}>
+                  <div className={styles['user-prompt-title']}>{v.title}</div>
+                  <div className={styles['user-prompt-content'] + ' one-line'}>{v.content}</div>
                 </div>
 
-                <div className={styles["user-prompt-buttons"]}>
+                <div className={styles['user-prompt-buttons']}>
                   {v.isUser && (
                     <IconButton
                       icon={<ClearIcon />}
-                      className={styles["user-prompt-button"]}
+                      className={styles['user-prompt-button']}
                       onClick={() => promptStore.remove(v.id!)}
                     />
                   )}
                   {v.isUser ? (
                     <IconButton
                       icon={<EditIcon />}
-                      className={styles["user-prompt-button"]}
+                      className={styles['user-prompt-button']}
                       onClick={() => setEditingPromptId(v.id)}
                     />
                   ) : (
                     <IconButton
                       icon={<EyeIcon />}
-                      className={styles["user-prompt-button"]}
+                      className={styles['user-prompt-button']}
                       onClick={() => setEditingPromptId(v.id)}
                     />
                   )}
                   <IconButton
                     icon={<CopyIcon />}
-                    className={styles["user-prompt-button"]}
+                    className={styles['user-prompt-button']}
                     onClick={() => copyToClipboard(v.content)}
                   />
                 </div>
@@ -216,10 +198,7 @@ function UserPromptModal(props: { onClose?: () => void }) {
       </Modal>
 
       {editingPromptId !== undefined && (
-        <EditPromptModal
-          id={editingPromptId!}
-          onClose={() => setEditingPromptId(undefined)}
-        />
+        <EditPromptModal id={editingPromptId!} onClose={() => setEditingPromptId(undefined)} />
       )}
     </div>
   );
@@ -270,14 +249,12 @@ function CheckButton() {
     return syncStore.coundSync();
   }, [syncStore]);
 
-  const [checkState, setCheckState] = useState<
-    "none" | "checking" | "success" | "failed"
-  >("none");
+  const [checkState, setCheckState] = useState<'none' | 'checking' | 'success' | 'failed'>('none');
 
   async function check() {
-    setCheckState("checking");
+    setCheckState('checking');
     const valid = await syncStore.check();
-    setCheckState(valid ? "success" : "failed");
+    setCheckState(valid ? 'success' : 'failed');
   }
 
   if (!couldCheck) return null;
@@ -288,13 +265,13 @@ function CheckButton() {
       bordered
       onClick={check}
       icon={
-        checkState === "none" ? (
+        checkState === 'none' ? (
           <ConnectionIcon />
-        ) : checkState === "checking" ? (
+        ) : checkState === 'checking' ? (
           <LoadingIcon />
-        ) : checkState === "success" ? (
+        ) : checkState === 'success' ? (
           <CloudSuccessIcon />
-        ) : checkState === "failed" ? (
+        ) : checkState === 'failed' ? (
           <CloudFailIcon />
         ) : (
           <ConnectionIcon />
@@ -331,10 +308,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
             <select
               value={syncStore.provider}
               onChange={(e) => {
-                syncStore.update(
-                  (config) =>
-                    (config.provider = e.target.value as ProviderType),
-                );
+                syncStore.update((config) => (config.provider = e.target.value as ProviderType));
               }}
             >
               {Object.entries(ProviderType).map(([k, v]) => (
@@ -353,9 +327,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
               type="checkbox"
               checked={syncStore.useProxy}
               onChange={(e) => {
-                syncStore.update(
-                  (config) => (config.useProxy = e.currentTarget.checked),
-                );
+                syncStore.update((config) => (config.useProxy = e.currentTarget.checked));
               }}
             ></input>
           </ListItem>
@@ -368,9 +340,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
                 type="text"
                 value={syncStore.proxyUrl}
                 onChange={(e) => {
-                  syncStore.update(
-                    (config) => (config.proxyUrl = e.currentTarget.value),
-                  );
+                  syncStore.update((config) => (config.proxyUrl = e.currentTarget.value));
                 }}
               ></input>
             </ListItem>
@@ -385,10 +355,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
                   type="text"
                   value={syncStore.webdav.endpoint}
                   onChange={(e) => {
-                    syncStore.update(
-                      (config) =>
-                        (config.webdav.endpoint = e.currentTarget.value),
-                    );
+                    syncStore.update((config) => (config.webdav.endpoint = e.currentTarget.value));
                   }}
                 ></input>
               </ListItem>
@@ -398,10 +365,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
                   type="text"
                   value={syncStore.webdav.username}
                   onChange={(e) => {
-                    syncStore.update(
-                      (config) =>
-                        (config.webdav.username = e.currentTarget.value),
-                    );
+                    syncStore.update((config) => (config.webdav.username = e.currentTarget.value));
                   }}
                 ></input>
               </ListItem>
@@ -409,10 +373,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
                 <PasswordInput
                   value={syncStore.webdav.password}
                   onChange={(e) => {
-                    syncStore.update(
-                      (config) =>
-                        (config.webdav.password = e.currentTarget.value),
-                    );
+                    syncStore.update((config) => (config.webdav.password = e.currentTarget.value));
                   }}
                 ></PasswordInput>
               </ListItem>
@@ -427,10 +388,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
                 type="text"
                 value={syncStore.upstash.endpoint}
                 onChange={(e) => {
-                  syncStore.update(
-                    (config) =>
-                      (config.upstash.endpoint = e.currentTarget.value),
-                  );
+                  syncStore.update((config) => (config.upstash.endpoint = e.currentTarget.value));
                 }}
               ></input>
             </ListItem>
@@ -441,10 +399,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
                 value={syncStore.upstash.username}
                 placeholder={STORAGE_KEY}
                 onChange={(e) => {
-                  syncStore.update(
-                    (config) =>
-                      (config.upstash.username = e.currentTarget.value),
-                  );
+                  syncStore.update((config) => (config.upstash.username = e.currentTarget.value));
                 }}
               ></input>
             </ListItem>
@@ -452,9 +407,7 @@ function SyncConfigModal(props: { onClose?: () => void }) {
               <PasswordInput
                 value={syncStore.upstash.apiKey}
                 onChange={(e) => {
-                  syncStore.update(
-                    (config) => (config.upstash.apiKey = e.currentTarget.value),
-                  );
+                  syncStore.update((config) => (config.upstash.apiKey = e.currentTarget.value));
                 }}
               ></PasswordInput>
             </ListItem>
@@ -495,13 +448,11 @@ function SyncItems() {
           title={Locale.Settings.Sync.CloudState}
           subTitle={
             syncStore.lastProvider
-              ? `${new Date(syncStore.lastSyncTime).toLocaleString()} [${
-                  syncStore.lastProvider
-                }]`
+              ? `${new Date(syncStore.lastSyncTime).toLocaleString()} [${syncStore.lastProvider}]`
               : Locale.Settings.Sync.NotSyncYet
           }
         >
-          <div style={{ display: "flex" }}>
+          <div style={{ display: 'flex' }}>
             <IconButton
               icon={<ConfigIcon />}
               text={Locale.UI.Config}
@@ -519,7 +470,7 @@ function SyncItems() {
                     showToast(Locale.Settings.Sync.Success);
                   } catch (e) {
                     showToast(Locale.Settings.Sync.Fail);
-                    console.error("[Sync]", e);
+                    console.error('[Sync]', e);
                   }
                 }}
               />
@@ -531,7 +482,7 @@ function SyncItems() {
           title={Locale.Settings.Sync.LocalState}
           subTitle={Locale.Settings.Sync.Overview(stateOverview)}
         >
-          <div style={{ display: "flex" }}>
+          <div style={{ display: 'flex' }}>
             <IconButton
               icon={<UploadIcon />}
               text={Locale.UI.Export}
@@ -550,15 +501,12 @@ function SyncItems() {
         </ListItem>
       </List>
 
-      {showSyncConfigModal && (
-        <SyncConfigModal onClose={() => setShowSyncConfigModal(false)} />
-      )}
+      {showSyncConfigModal && <SyncConfigModal onClose={() => setShowSyncConfigModal(false)} />}
     </>
   );
 }
 
 export function Settings() {
-  const navigate = useNavigate();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const config = useAppConfig();
   const updateConfig = config.update;
@@ -576,23 +524,18 @@ export function Settings() {
       setCheckingUpdate(false);
     });
 
-    console.log("[Update] local version ", updateStore.version);
-    console.log("[Update] remote version ", updateStore.remoteVersion);
+    console.log('[Update] local version ', updateStore.version);
+    console.log('[Update] remote version ', updateStore.remoteVersion);
   }
 
+  const { navigateChat } = useChatPathStore();
   const accessStore = useAccessStore();
   const shouldHideBalanceQuery = useMemo(() => {
     const isOpenAiUrl = accessStore.openaiUrl.includes(OPENAI_BASE_URL);
     return (
-      accessStore.hideBalanceQuery ||
-      isOpenAiUrl ||
-      accessStore.provider === ServiceProvider.Azure
+      accessStore.hideBalanceQuery || isOpenAiUrl || accessStore.provider === ServiceProvider.Azure
     );
-  }, [
-    accessStore.hideBalanceQuery,
-    accessStore.openaiUrl,
-    accessStore.provider,
-  ]);
+  }, [accessStore.hideBalanceQuery, accessStore.openaiUrl, accessStore.provider]);
 
   const usage = {
     used: updateStore.used,
@@ -631,13 +574,13 @@ export function Settings() {
 
   useEffect(() => {
     const keydownEvent = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        navigate(Path.Home);
+      if (e.key === 'Escape') {
+        navigateChat(Path.Home);
       }
     };
-    document.addEventListener("keydown", keydownEvent);
+    document.addEventListener('keydown', keydownEvent);
     return () => {
-      document.removeEventListener("keydown", keydownEvent);
+      document.removeEventListener('keydown', keydownEvent);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -649,26 +592,18 @@ export function Settings() {
     <ErrorBoundary>
       <div className="window-header" data-tauri-drag-region>
         <div className="window-header-title">
-          <div className="window-header-main-title">
-            {Locale.Settings.Title}
-          </div>
-          <div className="window-header-sub-title">
-            {Locale.Settings.SubTitle}
-          </div>
+          <div className="window-header-main-title">{Locale.Settings.Title}</div>
+          <div className="window-header-sub-title">{Locale.Settings.SubTitle}</div>
         </div>
         <div className="window-actions">
           <div className="window-action-button"></div>
           <div className="window-action-button"></div>
           <div className="window-action-button">
-            <IconButton
-              icon={<CloseIcon />}
-              onClick={() => navigate(Path.Home)}
-              bordered
-            />
+            <IconButton icon={<CloseIcon />} onClick={() => navigateChat(Path.Home)} bordered />
           </div>
         </div>
       </div>
-      <div className={styles["settings"]}>
+      <div className={styles['settings']}>
         <List>
           <ListItem title={Locale.Settings.Avatar}>
             <Popover
@@ -683,31 +618,28 @@ export function Settings() {
               }
               open={showEmojiPicker}
             >
-              <div
-                className={styles.avatar}
-                onClick={() => setShowEmojiPicker(true)}
-              >
+              <div className={styles.avatar} onClick={() => setShowEmojiPicker(true)}>
                 <Avatar avatar={config.avatar} />
               </div>
             </Popover>
           </ListItem>
 
           <ListItem
-            title={Locale.Settings.Update.Version(currentVersion ?? "unknown")}
+            title={Locale.Settings.Update.Version(currentVersion ?? 'unknown')}
             subTitle={
               checkingUpdate
                 ? Locale.Settings.Update.IsChecking
                 : hasNewVersion
-                ? Locale.Settings.Update.FoundUpdate(remoteId ?? "ERROR")
+                ? Locale.Settings.Update.FoundUpdate(remoteId ?? 'ERROR')
                 : Locale.Settings.Update.IsLatest
             }
           >
             {checkingUpdate ? (
               <LoadingIcon />
             ) : hasNewVersion ? (
-              <Link href={updateUrl} target="_blank" className="link">
+              <a href={updateUrl} target="_blank" className="link">
                 {Locale.Settings.Update.GoToUpdate}
-              </Link>
+              </a>
             ) : (
               <IconButton
                 icon={<ResetIcon></ResetIcon>}
@@ -721,10 +653,7 @@ export function Settings() {
             <Select
               value={config.submitKey}
               onChange={(e) => {
-                updateConfig(
-                  (config) =>
-                    (config.submitKey = e.target.value as any as SubmitKey),
-                );
+                updateConfig((config) => (config.submitKey = e.target.value as any as SubmitKey));
               }}
             >
               {Object.values(SubmitKey).map((v) => (
@@ -739,9 +668,7 @@ export function Settings() {
             <Select
               value={config.theme}
               onChange={(e) => {
-                updateConfig(
-                  (config) => (config.theme = e.target.value as any as Theme),
-                );
+                updateConfig((config) => (config.theme = e.target.value as any as Theme));
               }}
             >
               {Object.values(Theme).map((v) => (
@@ -778,10 +705,7 @@ export function Settings() {
               max="40"
               step="1"
               onChange={(e) =>
-                updateConfig(
-                  (config) =>
-                    (config.fontSize = Number.parseInt(e.currentTarget.value)),
-                )
+                updateConfig((config) => (config.fontSize = Number.parseInt(e.currentTarget.value)))
               }
             ></InputRange>
           </ListItem>
@@ -794,10 +718,7 @@ export function Settings() {
               type="checkbox"
               checked={config.enableAutoGenerateTitle}
               onChange={(e) =>
-                updateConfig(
-                  (config) =>
-                    (config.enableAutoGenerateTitle = e.currentTarget.checked),
-                )
+                updateConfig((config) => (config.enableAutoGenerateTitle = e.currentTarget.checked))
               }
             ></input>
           </ListItem>
@@ -810,10 +731,7 @@ export function Settings() {
               type="checkbox"
               checked={config.sendPreviewBubble}
               onChange={(e) =>
-                updateConfig(
-                  (config) =>
-                    (config.sendPreviewBubble = e.currentTarget.checked),
-                )
+                updateConfig((config) => (config.sendPreviewBubble = e.currentTarget.checked))
               }
             ></input>
           </ListItem>
@@ -831,9 +749,7 @@ export function Settings() {
               checked={!config.dontShowMaskSplashScreen}
               onChange={(e) =>
                 updateConfig(
-                  (config) =>
-                    (config.dontShowMaskSplashScreen =
-                      !e.currentTarget.checked),
+                  (config) => (config.dontShowMaskSplashScreen = !e.currentTarget.checked),
                 )
               }
             ></input>
@@ -847,10 +763,7 @@ export function Settings() {
               type="checkbox"
               checked={config.hideBuiltinMasks}
               onChange={(e) =>
-                updateConfig(
-                  (config) =>
-                    (config.hideBuiltinMasks = e.currentTarget.checked),
-                )
+                updateConfig((config) => (config.hideBuiltinMasks = e.currentTarget.checked))
               }
             ></input>
           </ListItem>
@@ -865,20 +778,14 @@ export function Settings() {
               type="checkbox"
               checked={config.disablePromptHint}
               onChange={(e) =>
-                updateConfig(
-                  (config) =>
-                    (config.disablePromptHint = e.currentTarget.checked),
-                )
+                updateConfig((config) => (config.disablePromptHint = e.currentTarget.checked))
               }
             ></input>
           </ListItem>
 
           <ListItem
             title={Locale.Settings.Prompt.List}
-            subTitle={Locale.Settings.Prompt.ListCount(
-              builtinCount,
-              customCount,
-            )}
+            subTitle={Locale.Settings.Prompt.ListCount(builtinCount, customCount)}
           >
             <IconButton
               icon={<EditIcon />}
@@ -899,9 +806,7 @@ export function Settings() {
                 type="text"
                 placeholder={Locale.Settings.Access.AccessCode.Placeholder}
                 onChange={(e) => {
-                  accessStore.update(
-                    (access) => (access.accessCode = e.currentTarget.value),
-                  );
+                  accessStore.update((access) => (access.accessCode = e.currentTarget.value));
                 }}
               />
             </ListItem>
@@ -918,8 +823,7 @@ export function Settings() {
                   checked={accessStore.useCustomConfig}
                   onChange={(e) =>
                     accessStore.update(
-                      (access) =>
-                        (access.useCustomConfig = e.currentTarget.checked),
+                      (access) => (access.useCustomConfig = e.currentTarget.checked),
                     )
                   }
                 ></input>
@@ -934,9 +838,7 @@ export function Settings() {
                       value={accessStore.provider}
                       onChange={(e) => {
                         accessStore.update(
-                          (access) =>
-                            (access.provider = e.target
-                              .value as ServiceProvider),
+                          (access) => (access.provider = e.target.value as ServiceProvider),
                         );
                       }}
                     >
@@ -948,13 +850,11 @@ export function Settings() {
                     </Select>
                   </ListItem>
 
-                  {accessStore.provider === "OpenAI" ? (
+                  {accessStore.provider === 'OpenAI' ? (
                     <>
                       <ListItem
                         title={Locale.Settings.Access.OpenAI.Endpoint.Title}
-                        subTitle={
-                          Locale.Settings.Access.OpenAI.Endpoint.SubTitle
-                        }
+                        subTitle={Locale.Settings.Access.OpenAI.Endpoint.SubTitle}
                       >
                         <input
                           type="text"
@@ -962,8 +862,7 @@ export function Settings() {
                           placeholder={OPENAI_BASE_URL}
                           onChange={(e) =>
                             accessStore.update(
-                              (access) =>
-                                (access.openaiUrl = e.currentTarget.value),
+                              (access) => (access.openaiUrl = e.currentTarget.value),
                             )
                           }
                         ></input>
@@ -975,13 +874,10 @@ export function Settings() {
                         <PasswordInput
                           value={accessStore.openaiApiKey}
                           type="text"
-                          placeholder={
-                            Locale.Settings.Access.OpenAI.ApiKey.Placeholder
-                          }
+                          placeholder={Locale.Settings.Access.OpenAI.ApiKey.Placeholder}
                           onChange={(e) => {
                             accessStore.update(
-                              (access) =>
-                                (access.openaiApiKey = e.currentTarget.value),
+                              (access) => (access.openaiApiKey = e.currentTarget.value),
                             );
                           }}
                         />
@@ -992,8 +888,7 @@ export function Settings() {
                       <ListItem
                         title={Locale.Settings.Access.Azure.Endpoint.Title}
                         subTitle={
-                          Locale.Settings.Access.Azure.Endpoint.SubTitle +
-                          Azure.ExampleEndpoint
+                          Locale.Settings.Access.Azure.Endpoint.SubTitle + Azure.ExampleEndpoint
                         }
                       >
                         <input
@@ -1002,8 +897,7 @@ export function Settings() {
                           placeholder={Azure.ExampleEndpoint}
                           onChange={(e) =>
                             accessStore.update(
-                              (access) =>
-                                (access.azureUrl = e.currentTarget.value),
+                              (access) => (access.azureUrl = e.currentTarget.value),
                             )
                           }
                         ></input>
@@ -1015,22 +909,17 @@ export function Settings() {
                         <PasswordInput
                           value={accessStore.azureApiKey}
                           type="text"
-                          placeholder={
-                            Locale.Settings.Access.Azure.ApiKey.Placeholder
-                          }
+                          placeholder={Locale.Settings.Access.Azure.ApiKey.Placeholder}
                           onChange={(e) => {
                             accessStore.update(
-                              (access) =>
-                                (access.azureApiKey = e.currentTarget.value),
+                              (access) => (access.azureApiKey = e.currentTarget.value),
                             );
                           }}
                         />
                       </ListItem>
                       <ListItem
                         title={Locale.Settings.Access.Azure.ApiVerion.Title}
-                        subTitle={
-                          Locale.Settings.Access.Azure.ApiVerion.SubTitle
-                        }
+                        subTitle={Locale.Settings.Access.Azure.ApiVerion.SubTitle}
                       >
                         <input
                           type="text"
@@ -1038,9 +927,7 @@ export function Settings() {
                           placeholder="2023-08-01-preview"
                           onChange={(e) =>
                             accessStore.update(
-                              (access) =>
-                                (access.azureApiVersion =
-                                  e.currentTarget.value),
+                              (access) => (access.azureApiVersion = e.currentTarget.value),
                             )
                           }
                         ></input>
@@ -1060,8 +947,8 @@ export function Settings() {
                   ? loadingUsage
                     ? Locale.Settings.Usage.IsChecking
                     : Locale.Settings.Usage.SubTitle(
-                        usage?.used ?? "[?]",
-                        usage?.subscription ?? "[?]",
+                        usage?.used ?? '[?]',
+                        usage?.subscription ?? '[?]',
                       )
                   : Locale.Settings.Usage.NoAccess
               }
@@ -1087,9 +974,7 @@ export function Settings() {
               value={config.customModels}
               placeholder="model1,model2,model3"
               onChange={(e) =>
-                config.update(
-                  (config) => (config.customModels = e.currentTarget.value),
-                )
+                config.update((config) => (config.customModels = e.currentTarget.value))
               }
             ></input>
           </ListItem>
@@ -1106,9 +991,7 @@ export function Settings() {
           />
         </List>
 
-        {shouldShowPromptModal && (
-          <UserPromptModal onClose={() => setShowPromptModal(false)} />
-        )}
+        {shouldShowPromptModal && <UserPromptModal onClose={() => setShowPromptModal(false)} />}
 
         <DangerItems />
       </div>

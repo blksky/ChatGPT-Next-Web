@@ -1,21 +1,18 @@
-import { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from 'react';
+import { ReactComponent as AddIcon } from '../icons/add.svg';
+import { ReactComponent as ChatGptIcon } from '../icons/chatgpt.svg';
+import { ReactComponent as DeleteIcon } from '../icons/delete.svg';
+import { ReactComponent as DragIcon } from '../icons/drag.svg';
+import { ReactComponent as GithubIcon } from '../icons/github.svg';
+import { ReactComponent as MaskIcon } from '../icons/mask.svg';
+import { ReactComponent as PluginIcon } from '../icons/plugin.svg';
+import { ReactComponent as SettingsIcon } from '../icons/settings.svg';
+import { IconButton } from './button';
+import styles from './home.module.scss';
 
-import styles from "./home.module.scss";
+import Locale from '../locales';
 
-import { IconButton } from "./button";
-import SettingsIcon from "../icons/settings.svg";
-import GithubIcon from "../icons/github.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
-import AddIcon from "../icons/add.svg";
-import CloseIcon from "../icons/close.svg";
-import DeleteIcon from "../icons/delete.svg";
-import MaskIcon from "../icons/mask.svg";
-import PluginIcon from "../icons/plugin.svg";
-import DragIcon from "../icons/drag.svg";
-
-import Locale from "../locales";
-
-import { useAppConfig, useChatStore } from "../store";
+import { useAppConfig, useChatPathStore, useChatStore } from '../store';
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
@@ -24,16 +21,19 @@ import {
   NARROW_SIDEBAR_WIDTH,
   Path,
   REPO_URL,
-} from "../constant";
+} from '../constant';
 
-import { Link, useNavigate } from "react-router-dom";
-import { isIOS, useMobileScreen } from "../utils";
-import dynamic from "next/dynamic";
-import { showConfirm, showToast } from "./ui-lib";
+import { isIOS, useMobileScreen } from '../utils';
+import { showConfirm, showToast } from './ui-lib';
 
-const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
-  loading: () => null,
-});
+// const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
+//   loading: () => null,
+// });
+
+// @ts-ignore
+const ChatList: any = React.lazy(() =>
+  import('./chat-list').then((res) => ({ default: res.ChatList })),
+);
 
 function useHotKey() {
   const chatStore = useChatStore();
@@ -41,16 +41,16 @@ function useHotKey() {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey) {
-        if (e.key === "ArrowUp") {
+        if (e.key === 'ArrowUp') {
           chatStore.nextSession(-1);
-        } else if (e.key === "ArrowDown") {
+        } else if (e.key === 'ArrowDown') {
           chatStore.nextSession(1);
         }
       }
     };
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   });
 }
 
@@ -96,8 +96,8 @@ function useDragSideBar() {
 
     const handleDragEnd = () => {
       // In useRef the data is non-responsive, so `config.sidebarWidth` can't get the dynamic sidebarWidth
-      window.removeEventListener("pointermove", handleDragMove);
-      window.removeEventListener("pointerup", handleDragEnd);
+      window.removeEventListener('pointermove', handleDragMove);
+      window.removeEventListener('pointerup', handleDragEnd);
 
       // if user click the drag icon, should toggle the sidebar
       const shouldFireClick = Date.now() - dragStartTime < 300;
@@ -106,20 +106,19 @@ function useDragSideBar() {
       }
     };
 
-    window.addEventListener("pointermove", handleDragMove);
-    window.addEventListener("pointerup", handleDragEnd);
+    window.addEventListener('pointermove', handleDragMove);
+    window.addEventListener('pointerup', handleDragEnd);
   };
 
   const isMobileScreen = useMobileScreen();
-  const shouldNarrow =
-    !isMobileScreen && config.sidebarWidth < MIN_SIDEBAR_WIDTH;
+  const shouldNarrow = !isMobileScreen && config.sidebarWidth < MIN_SIDEBAR_WIDTH;
 
   useEffect(() => {
     const barWidth = shouldNarrow
       ? NARROW_SIDEBAR_WIDTH
       : limit(config.sidebarWidth ?? DEFAULT_SIDEBAR_WIDTH);
-    const sideBarWidth = isMobileScreen ? "100vw" : `${barWidth}px`;
-    document.documentElement.style.setProperty("--sidebar-width", sideBarWidth);
+    const sideBarWidth = 0; // isMobileScreen ? '100vw' : `${barWidth}px`;
+    document.documentElement.style.setProperty('--sidebar-width', sideBarWidth);
   }, [config.sidebarWidth, isMobileScreen, shouldNarrow]);
 
   return {
@@ -133,48 +132,41 @@ export function SideBar(props: { className?: string }) {
 
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
-  const navigate = useNavigate();
   const config = useAppConfig();
+  const { navigateChat } = useChatPathStore();
   const isMobileScreen = useMobileScreen();
-  const isIOSMobile = useMemo(
-    () => isIOS() && isMobileScreen,
-    [isMobileScreen],
-  );
+  const isIOSMobile = useMemo(() => isIOS() && isMobileScreen, [isMobileScreen]);
 
   useHotKey();
 
   return (
     <div
-      className={`${styles.sidebar} ${props.className} ${
-        shouldNarrow && styles["narrow-sidebar"]
-      }`}
+      className={`${styles.sidebar} ${props.className} ${shouldNarrow && styles['narrow-sidebar']}`}
       style={{
         // #3016 disable transition on ios mobile screen
-        transition: isMobileScreen && isIOSMobile ? "none" : undefined,
+        transition: isMobileScreen && isIOSMobile ? 'none' : undefined,
       }}
     >
-      <div className={styles["sidebar-header"]} data-tauri-drag-region>
-        <div className={styles["sidebar-title"]} data-tauri-drag-region>
+      <div className={styles['sidebar-header']} data-tauri-drag-region>
+        <div className={styles['sidebar-title']} data-tauri-drag-region>
           ChatGPT Next
         </div>
-        <div className={styles["sidebar-sub-title"]}>
-          Build your own AI assistant.
-        </div>
-        <div className={styles["sidebar-logo"] + " no-dark"}>
+        <div className={styles['sidebar-sub-title']}>Build your own AI assistant.</div>
+        <div className={styles['sidebar-logo'] + ' no-dark'}>
           <ChatGptIcon />
         </div>
       </div>
 
-      <div className={styles["sidebar-header-bar"]}>
+      <div className={styles['sidebar-header-bar']}>
         <IconButton
           icon={<MaskIcon />}
           text={shouldNarrow ? undefined : Locale.Mask.Name}
-          className={styles["sidebar-bar-button"]}
+          className={styles['sidebar-bar-button']}
           onClick={() => {
             if (config.dontShowMaskSplashScreen !== true) {
-              navigate(Path.NewChat, { state: { fromHome: true } });
+              navigateChat(Path.NewChat, { state: { fromHome: true } });
             } else {
-              navigate(Path.Masks, { state: { fromHome: true } });
+              navigateChat(Path.Masks, { state: { fromHome: true } });
             }
           }}
           shadow
@@ -182,26 +174,28 @@ export function SideBar(props: { className?: string }) {
         <IconButton
           icon={<PluginIcon />}
           text={shouldNarrow ? undefined : Locale.Plugin.Name}
-          className={styles["sidebar-bar-button"]}
+          className={styles['sidebar-bar-button']}
           onClick={() => showToast(Locale.WIP)}
           shadow
         />
       </div>
 
       <div
-        className={styles["sidebar-body"]}
+        className={styles['sidebar-body']}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
-            navigate(Path.Home);
+            navigateChat(Path.Home);
           }
         }}
       >
-        <ChatList narrow={shouldNarrow} />
+        <React.Suspense>
+          <ChatList narrow={shouldNarrow} />
+        </React.Suspense>
       </div>
 
-      <div className={styles["sidebar-tail"]}>
-        <div className={styles["sidebar-actions"]}>
-          <div className={styles["sidebar-action"] + " " + styles.mobile}>
+      <div className={styles['sidebar-tail']}>
+        <div className={styles['sidebar-actions']}>
+          <div className={styles['sidebar-action'] + ' ' + styles.mobile}>
             <IconButton
               icon={<DeleteIcon />}
               onClick={async () => {
@@ -211,12 +205,12 @@ export function SideBar(props: { className?: string }) {
               }}
             />
           </div>
-          <div className={styles["sidebar-action"]}>
-            <Link to={Path.Settings}>
+          <div className={styles['sidebar-action']}>
+            <a onClick={() => navigateChat(Path.Settings)}>
               <IconButton icon={<SettingsIcon />} shadow />
-            </Link>
+            </a>
           </div>
-          <div className={styles["sidebar-action"]}>
+          <div className={styles['sidebar-action']}>
             <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
               <IconButton icon={<GithubIcon />} shadow />
             </a>
@@ -229,9 +223,9 @@ export function SideBar(props: { className?: string }) {
             onClick={() => {
               if (config.dontShowMaskSplashScreen) {
                 chatStore.newSession();
-                navigate(Path.Chat);
+                navigateChat(Path.Chat);
               } else {
-                navigate(Path.NewChat);
+                navigateChat(Path.NewChat);
               }
             }}
             shadow
@@ -239,10 +233,7 @@ export function SideBar(props: { className?: string }) {
         </div>
       </div>
 
-      <div
-        className={styles["sidebar-drag"]}
-        onPointerDown={(e) => onDragStart(e as any)}
-      >
+      <div className={styles['sidebar-drag']} onPointerDown={(e) => onDragStart(e as any)}>
         <DragIcon />
       </div>
     </div>

@@ -3,8 +3,10 @@
 .chat-input-actions {
   display: flex;
   flex-wrap: wrap;
+  box-sizing: content-box;
 
   .chat-input-action {
+    box-sizing: content-box;
     display: inline-flex;
     border-radius: 20px;
     font-size: 12px;

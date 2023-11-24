@@ -1,33 +1,28 @@
-import {
-  ApiPath,
-  DEFAULT_API_HOST,
-  ServiceProvider,
-  StoreKey,
-} from "../constant";
-import { getHeaders } from "../client/api";
-import { getClientConfig } from "../config/client";
-import { createPersistStore } from "../utils/store";
-import { ensure } from "../utils/clone";
+import { getHeaders } from '../client/api';
+import { getClientConfig } from '../config/client';
+import { ApiPath, DEFAULT_API_HOST, ServiceProvider, StoreKey } from '../constant';
+import { ensure } from '../utils/clone';
+import { createPersistStore } from '../utils/store';
 
 let fetchState = 0; // 0 not fetch, 1 fetching, 2 done
 
 const DEFAULT_OPENAI_URL =
-  getClientConfig()?.buildMode === "export" ? DEFAULT_API_HOST : ApiPath.OpenAI;
+  getClientConfig()?.buildMode === 'export' ? DEFAULT_API_HOST : ApiPath.OpenAI;
 
 const DEFAULT_ACCESS_STATE = {
-  accessCode: "",
+  accessCode: '',
   useCustomConfig: false,
 
   provider: ServiceProvider.OpenAI,
 
   // openai
   openaiUrl: DEFAULT_OPENAI_URL,
-  openaiApiKey: "",
+  openaiApiKey: '',
 
   // azure
-  azureUrl: "",
-  azureApiKey: "",
-  azureApiVersion: "2023-08-01-preview",
+  azureUrl: '',
+  azureApiKey: '',
+  azureApiVersion: '2023-08-01-preview',
 
   // server config
   needCode: true,
@@ -35,7 +30,7 @@ const DEFAULT_ACCESS_STATE = {
   hideBalanceQuery: false,
   disableGPT4: false,
   disableFastLink: false,
-  customModels: "",
+  customModels: '',
 };
 
 export const useAccessStore = createPersistStore(
@@ -49,11 +44,11 @@ export const useAccessStore = createPersistStore(
     },
 
     isValidOpenAI() {
-      return ensure(get(), ["openaiApiKey"]);
+      return ensure(get(), ['openaiApiKey']);
     },
 
     isValidAzure() {
-      return ensure(get(), ["azureUrl", "azureApiKey", "azureApiVersion"]);
+      return ensure(get(), ['azureUrl', 'azureApiKey', 'azureApiVersion']);
     },
 
     isAuthorized() {
@@ -64,14 +59,14 @@ export const useAccessStore = createPersistStore(
         this.isValidOpenAI() ||
         this.isValidAzure() ||
         !this.enabledAccessControl() ||
-        (this.enabledAccessControl() && ensure(get(), ["accessCode"]))
+        (this.enabledAccessControl() && ensure(get(), ['accessCode']))
       );
     },
     fetch() {
-      if (fetchState > 0 || getClientConfig()?.buildMode === "export") return;
+      if (fetchState > 0 || getClientConfig()?.buildMode === 'export') return;
       fetchState = 1;
-      fetch("/api/config", {
-        method: "post",
+      fetch('/api/config', {
+        method: 'post',
         body: null,
         headers: {
           ...getHeaders(),
@@ -79,11 +74,11 @@ export const useAccessStore = createPersistStore(
       })
         .then((res) => res.json())
         .then((res: DangerConfig) => {
-          console.log("[Config] got config from server", res);
+          console.log('[Config] got config from server', res);
           set(() => ({ ...res }));
         })
         .catch(() => {
-          console.error("[Config] failed to fetch config");
+          console.error('[Config] failed to fetch config');
         })
         .finally(() => {
           fetchState = 2;
@@ -101,7 +96,7 @@ export const useAccessStore = createPersistStore(
           azureApiVersion: string;
         };
         state.openaiApiKey = state.token;
-        state.azureApiVersion = "2023-08-01-preview";
+        state.azureApiVersion = '2023-08-01-preview';
       }
 
       return persistedState as any;
